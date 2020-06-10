@@ -1,7 +1,7 @@
 <?php
 
 // use Illuminate\Support\Facades\Route;
-use APP\Book;
+use App\Book;
 use Illuminate\Http\Request;
 
 /*
@@ -18,4 +18,27 @@ use Illuminate\Http\Request;
 Route::get('/', function () {
     $books = Book::all();
     return view('books', ['books' => $books]);
+});
+
+Route::post('/book', function(Request $request) {
+    $validator = Validator::make($request->all(),[
+        'name' => 'required|max:255',
+    ]);
+
+    if ($validator->fails()) {
+        return redirect('/')
+            ->withInput()
+            ->withErrors($validator);    
+    };
+
+    $book = new Book;
+    $book->title = $request->name;
+    $book->save();
+
+    return redirect('/');
+});
+
+Route::delete('/book/{book}', function(Book $book){
+    $book -> delete();
+    return redirect('/');
 });
